@@ -1,0 +1,90 @@
+<script>
+  const log = console.log;
+</script>
+
+<!-- 
+# 제너레이터/이터레이터 
+  - 제너레이터: 이터레이터이자 이터러블을 생성하는 함수 
+-->
+
+<script>
+  // 제너레이터 함수는 이터레이터를 반환함
+  function* gen() {
+    yield 1;
+    if (false) yield 2; // 구문도 사용 가능
+    yield 3;
+    return 100; // return 값은 done:true일 때만 반환, 순회 대상에서 제오됨 (for...of로는 안나오는 값)
+  }
+
+  let iter = gen();
+  log(iter[Symbol.iterator]() == iter);
+  log(iter.next());
+  log(iter.next());
+  log(iter.next());
+  log(iter.next());
+
+  for (const a of gen()) log(a);
+
+  // JS에서는 어떤 값이나 구문이든 모두 제네레이터로 만들 수 있는 점이 함수형 관점에서 매우 중요
+</script>
+
+<!-- 
+# odds
+-->
+<script>
+  function* infinity(i = 0) {
+    while (true) yield i++; // 무한 루프에 빠지지 않음
+  }
+
+  // let iter3 = infinity(0);
+  // log(iter3.next(), iter3.next(), iter3.next(), iter3.next(), iter3.next());
+  // log(iter3.next(), iter3.next(), iter3.next(), iter3.next(), iter3.next());
+  // log(iter3.next(), iter3.next(), iter3.next(), iter3.next(), iter3.next());
+
+  function* limit(l) {
+    for (const a of infinity(1)) {
+      yield a;
+      if (a == l) return;
+    }
+  }
+
+  // function* odds(limit) {
+  //   for (let i = 0; i < limit; i++) {
+  //     if (i % 2) yield i;
+  //   }
+  // }
+  function* odds(l) {
+    for (const a of limit(l, infinity(1))) {
+      if (a % 2) yield a;
+    }
+  }
+
+  let iter2 = odds(10);
+  log(
+    iter2.next(),
+    iter2.next(),
+    iter2.next(),
+    iter2.next(),
+    iter2.next(),
+    iter2.next()
+  );
+
+  for (const a of odds(40)) log(a);
+
+  console.clear();
+</script>
+
+<!-- 
+# for of, 전개 연산자, 구조 분해, 나머지 연산자 
+-->
+
+<script>
+  log(...odds(10));
+  log([...odds(10)]);
+
+  const [head, ...tail] = odds(10);
+  log(head, tail);
+
+  const [a, b, ...rest] = odds(10);
+  log(a, b, rest);
+</script>
