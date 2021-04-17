@@ -1,0 +1,161 @@
+<script>
+  const log = console.log;
+</script>
+
+<!-- 
+## 기존과 달라진 ES6에서의 리스트 순회
+  - for i++
+  - for of 
+-->
+
+<script>
+  // ES5 배열
+  const list = [1, 2, 3];
+  for (var i = 0; i < list.length; i++) {
+    log(list[i]);
+  }
+  // ES5 유사 배열
+  const str = 'abc';
+  for (var i = 0; i < str.length; i++) {
+    log(str[i]);
+  }
+  // ES6
+  for (const a of list) {
+    log(a);
+  }
+  for (const a of str) {
+    log(a);
+  }
+</script>
+
+<!-- 
+### Array를 통해 알아보기 
+-->
+
+<script>
+  console.clear();
+  log('--------- Arr ---------');
+  const arr = [1, 2, 3];
+  for (const a of arr) log(a);
+
+  log(Symbol.iterator); // ES6에서 추가됨
+  // arr[Symbol.iterator] = null; // arr에서 Symbol.iterator 제거 시 for...of 문 동작 안함
+  // > array, set, map은 자바스크립트 내장 객체로 이터러블/이터레이터 프로토콜을 따르고 있음
+
+  let iterator = arr[Symbol.iterator]();
+  iterator.next(); // {value: 1, done: false}
+  iterator.next(); // {value: 2, done: false}
+  iterator.next(); // {value: 3, done: false}
+  iterator.next(); // {value: undefined, done: true}
+
+  let arr2 = arr[Symbol.iterator]();
+  arr2.next();
+  for (const a of arr2) log(a);
+</script>
+
+<!-- 
+### Set을 통해 알아보기 
+-->
+
+<script>
+  log('--------- Set ---------');
+  const set = new Set([1, 2, 3]);
+  for (const a of set) log(a);
+</script>
+
+<!-- 
+### Map을 통해 알아보기 
+-->
+
+<script>
+  log('--------- Map ---------');
+  const map = new Map([
+    ['a', 1],
+    ['b', 2],
+    ['c', 3],
+  ]);
+  for (const a of map) log(a);
+
+  var k = map.keys(); // MapIterator 반환, Symbol.iterator 보유
+  var v = map.values(); // MapIterator 반환, Symbol.iterator 보유
+  var e = map.entries(); // MapIterator 반환, Symbol.iterator 보유
+
+  k.next();
+  for (const a of k) log(a);
+  v.next();
+  for (const a of v) log(a);
+  console.clear();
+</script>
+
+<!-- 
+## 이터러블/이터레이터 프로토콜
+  - 이터러블: 이터레이터를 리턴하는 [Symbol.iterator]() 를 가진 값
+  - 이터레이터: { value, done } 객체를 리턴하는 next() 를 가진 값
+  - 이터러블/이터레이터 프로토콜: 이터러블을 for...of, 전개 연산자 등과 함께 동작하도록한 규약
+
+### 사용자 정의 이터러블을 통해 알아보기 
+-->
+
+<script>
+  // 커스텀 이터레이터 제작
+  const iterable = {
+    [Symbol.iterator]() {
+      let i = 3;
+      return {
+        next() {
+          return i == 0
+            ? { value: undefined, done: true }
+            : { value: i--, done: false };
+        },
+        [Symbol.iterator]() {
+          return this;
+        },
+      };
+    },
+  };
+
+  let iter = iterable[Symbol.iterator]();
+  log(iter[Symbol.iterator]() == iter);
+  /* 
+    이터레이터의 [Symbol.iterator]() 반환값은 자기 자신이 반환되어야 한다
+    이미 많은 JS 라이브러리에서 for...of를 통해 순회 가능하도록 이터러블/이터레이터 프로토콜을 따름. ex) immutableJS 등
+    dom 관련 여러 브라우저 값들도 이 프로토콜을 지원함
+  */
+  // log(iter.next(), iter.next(), iter.next(), iter.next());
+  // for (const a of iter) log(a);
+
+  log(iter.next(), iter.next());
+  for (const a of iter) log(a);
+
+  const arr3 = [1, 2, 3];
+  let iter2 = arr3[Symbol.iterator]();
+  iter2.next();
+
+  log(iter2[Symbol.iterator]() == iter2); // true
+  for (const a of iter2) log(a);
+
+  const all = document.querySelectorAll('*');
+  for (const a of all) log(a);
+  log(all);
+  log(all[Symbol.iterator]);
+
+  let iter3 = all[Symbol.iterator]();
+  log(iter3.next());
+  log(iter3.next());
+  log(iter3.next());
+
+  console.clear();
+</script>
+
+<!-- 
+  ## 전개 연산자 
+-->
+
+<script>
+  const a = [1, 2];
+  log([...a, ...[3, 4]]);
+  /* 
+  a[Symbol.iterator] = null // 전개 연산자도 Symbol.iterator를 사용
+  log([...a, ...[3, 4]]); // 에러 발생
+  */
+</script>
