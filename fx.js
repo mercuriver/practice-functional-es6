@@ -6,6 +6,22 @@ const pipe = (f, ...fs) => (...as) => go(f(...as), ...fs);
 const curry = (f) => (a, ..._) =>
   _.length ? f(a, ..._) : (..._) => f(a, ..._);
 
+const L = {};
+L.range = function* (l) {
+  let i = -1;
+  while (++i < l) {
+    yield i;
+  }
+};
+
+L.map = curry(function* (f, iter) {
+  for (const a of iter) yield f(a);
+});
+
+L.filter = curry(function* (f, iter) {
+  for (const a of iter) if (f(a)) yield a;
+});
+
 const map = curry((f, iter) => {
   let res = [];
   for (const a of iter) {
@@ -53,19 +69,3 @@ const range = (l) => {
 
   return res;
 };
-
-const L = {};
-L.range = function* (l) {
-  let i = -1;
-  while (++i < l) {
-    yield i;
-  }
-};
-
-L.map = curry(function* (f, iter) {
-  for (const a of iter) yield f(a);
-});
-
-L.filter = curry(function* (f, iter) {
-  for (const a of iter) if (f(a)) yield a;
-});

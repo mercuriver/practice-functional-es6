@@ -66,6 +66,7 @@
     log
   );
   console.timeEnd('');
+  console.clear();
 </script>
 
 <!-- 
@@ -85,10 +86,70 @@
 ### reduce 
 -->
 
-<script></script>
+<script>
+  // const queryStr = (obj) =>
+  //   go(
+  //     obj,
+  //     Object.entries,
+  //     map(([k, v]) => `${k}=${v}`),
+  //     reduce((a, b) => `${a}&${b}`)
+  //   );
+  // =>
+
+  L.entries = function* (obj) {
+    for (const k in obj) yield [k, obj[k]];
+  };
+
+  const join = curry((seq = ',', iter) =>
+    reduce((a, b) => `${a}${seq}${b}`, iter)
+  );
+
+  const queryStr = pipe(
+    L.entries,
+    L.map(([k, v]) => `${k}=${v}`),
+    join('&')
+  );
+  log(queryStr({ lilit: 10, offset: 10, type: 'notice' }));
+
+  // function* a() {
+  //   yield 10;
+  //   yield 11;
+  //   yield 12;
+  //   yield 13;
+  //   yield 14;
+  // }
+
+  // // log(a().join(','));
+  // log(join(',', a()));
+
+  console.clear();
+</script>
 
 <!-- 
 ### take, find 
 -->
 
-<script></script>
+<script>
+  const users = [
+    { age: 32 },
+    { age: 31 },
+    { age: 37 },
+    { age: 28 },
+    { age: 25 },
+    { age: 32 },
+    { age: 31 },
+    { age: 37 },
+  ];
+
+  const find = curry((f, iter) => go(iter, L.filter(f), take(1), ([a]) => a));
+
+  // log(find((u) => u.age < 30, users));
+  // log(find((u) => u.age < 30)(users));
+
+  go(
+    users,
+    L.map((u) => u.age),
+    find((n) => n < 30),
+    log
+  );
+</script>
