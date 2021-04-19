@@ -10,9 +10,10 @@
 -->
 
 <script>
-  L.map = curry(function* (f, iter) {
-    for (const a of iter) yield f(a);
-  });
+  // fx.js로 이동
+  // L.map = curry(function* (f, iter) {
+  //   for (const a of iter) yield f(a);
+  // });
 
   var it = L.map((a) => a + 10, [1, 2, 3]);
   // log(it.next(), it.next(), it.next(), it.next());
@@ -24,9 +25,10 @@
 -->
 
 <script>
-  L.filter = curry(function* (f, iter) {
-    for (const a of iter) if (f(a)) yield a;
-  });
+  // fx.js로 이동
+  // L.filter = curry(function* (f, iter) {
+  //   for (const a of iter) if (f(a)) yield a;
+  // });
 
   var it = L.filter((a) => a % 2, [1, 2, 3, 4]);
   log(...it);
