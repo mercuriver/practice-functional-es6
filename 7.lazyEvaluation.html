@@ -53,3 +53,31 @@
   // test('L.range', 10, () => reduce(add, L.range(100000)));
   console.clear();
 </script>
+
+<!-- 
+  ## take
+ -->
+<script>
+  const take = curry((l, iter) => {
+    let res = [];
+    for (const a of iter) {
+      res.push(a);
+      if (res.length === l) return res;
+    }
+    return res;
+  });
+
+  console.time('take');
+  // log(take(5, range(100000)));
+  // log(take(5, range(Infinity))); // 무한 루프
+  // go(range(10000), take(5), reduce(add), log);
+  go(range(10000), reduce(add), log);
+  console.timeEnd('take');
+
+  console.time('take L');
+  // log(take(5, L.range(100000)));
+  // log(take(5, L.range(Infinity))); // 정상 처리
+  // go(L.range(10000), take(5), reduce(add), log);
+  go(L.range(10000), reduce(add), log);
+  console.timeEnd('take L');
+</script>
