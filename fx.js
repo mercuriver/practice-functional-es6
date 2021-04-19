@@ -1,3 +1,5 @@
+const log = console.log;
+
 const go = (...args) => reduce((a, f) => f(a), args);
 const pipe = (f, ...fs) => (...as) => go(f(...as), ...fs);
 
