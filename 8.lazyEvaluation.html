@@ -1,0 +1,92 @@
+<script src="./fx.js"></script>
+
+<!-- 
+# 이터러블 중심 프로그래밍에서의 지연 평가 (Lazy Evaluation)
+- 제때 계산법
+- 느긋한 계산법
+- 제너레이터/이터레이터 프로토콜을 기반으로 구현
+
+### L.map 
+-->
+
+<script>
+  L.map = curry(function* (f, iter) {
+    for (const a of iter) yield f(a);
+  });
+
+  var it = L.map((a) => a + 10, [1, 2, 3]);
+  // log(it.next(), it.next(), it.next(), it.next());
+  log(...it);
+</script>
+
+<!-- 
+### L.filter 
+-->
+
+<script>
+  L.filter = curry(function* (f, iter) {
+    for (const a of iter) if (f(a)) yield a;
+  });
+
+  var it = L.filter((a) => a % 2, [1, 2, 3, 4]);
+  log(...it);
+
+  console.clear();
+</script>
+
+<!-- 
+### range, map, filter, take, reduce 중첩 사용 
+-->
+
+<script>
+  console.time('');
+  go(
+    range(10),
+    map((n) => n + 10),
+    filter((n) => n % 2),
+    take(2),
+    log
+  );
+  console.timeEnd('');
+</script>
+
+<!-- 
+### L.range, L.map, L.filter, take, reduce 중첩 사용 
+-->
+
+<script>
+  console.time('');
+  go(
+    L.range(10),
+    L.map((n) => n + 10),
+    L.filter((n) => n % 2),
+    take(2),
+    log
+  );
+  console.timeEnd('');
+</script>
+
+<!-- 
+### map, filter 계열 함수들이 가지는 결합 법칙
+
+- 사용하는 데이터가 무엇이든지
+- 사용하는 보조 함수가 순수 함수라면 무엇이든지
+- 아래와 같이 결합한다면 둘 다 결과가 같다.
+
+[[mapping, mapping], [filtering, filtering], [mapping, mapping]]
+=
+[[mapping, filtering, mapping], [mapping, filtering, mapping]]
+
+
+## 결과를 만드는 함수 reduce, take
+
+### reduce 
+-->
+
+<script></script>
+
+<!-- 
+### take, find 
+-->
+
+<script></script>
