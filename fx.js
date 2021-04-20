@@ -5,15 +5,25 @@ const curry = (f) => (a, ..._) =>
 
 const go1 = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
 
-const reduce = curry((f, acc, iter) => {
-  if (!iter) {
-    iter = acc[Symbol.iterator]();
-    acc = iter.next().value;
-  }
+const nop = Symbol('nop');
 
+const reduceF = (acc, a, f) =>
+  a instanceof Promise
+    ? a
+        .then((a) => f(acc, a))
+        .catch((e) => (e == nop ? acc : Promise.reject(e)))
+    : f(acc, a);
+
+const head = (iter) => go1(take(1, iter), ([h]) => h);
+
+const reduce = curry((f, acc, iter) => {
+  if (!iter) return reduce(f, head((iter = acc[Symbol.iterator]())), iter);
+
+  iter = iter[Symbol.iterator]();
   return go1(acc, function recur(acc) {
-    for (const a of iter) {
-      acc = f(acc, a);
+    let cur;
+    while (!(cur = iter.next()).done) {
+      acc = reduceF(acc, cur.value, f);
       if (acc instanceof Promise) return acc.then(recur);
     }
     return acc;
@@ -22,8 +32,6 @@ const reduce = curry((f, acc, iter) => {
 
 const go = (...args) => reduce((a, f) => f(a), args);
 const pipe = (f, ...fs) => (...as) => go(f(...as), ...fs);
-
-const nop = Symbol('nop');
 
 const L = {};
 L.range = function* (l) {
