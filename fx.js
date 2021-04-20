@@ -43,6 +43,8 @@ L.filter = curry(function* (f, iter) {
   for (const a of iter) if (f(a)) yield a;
 });
 
+L.flatMap = curry(pipe(L.map, L.flatten));
+
 const isIterable = (a) => a && a[Symbol.iterator];
 
 L.flatten = function* (iter) {
@@ -63,6 +65,7 @@ const takeAll = take(Infinity);
 const map = curry(pipe(L.map, takeAll));
 const filter = curry(pipe(L.filter, takeAll));
 const flatten = pipe(L.flatten, takeAll);
+const flatMap = pipe(L.flatMap, takeAll);
 
 const range = (l) => {
   let i = -1;
