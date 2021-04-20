@@ -43,9 +43,26 @@ L.filter = curry(function* (f, iter) {
   for (const a of iter) if (f(a)) yield a;
 });
 
+const isIterable = (a) => a && a[Symbol.iterator];
+
+L.flatten = function* (iter) {
+  for (const a of iter) {
+    if (isIterable(a)) yield* a;
+    else yield a;
+  }
+};
+
+L.deepFlat = function* f(iter) {
+  for (const a of iter) {
+    if (isIterable(a)) yield* f(a);
+    else yield a;
+  }
+};
+
 const takeAll = take(Infinity);
 const map = curry(pipe(L.map, takeAll));
 const filter = curry(pipe(L.filter, takeAll));
+const flatten = pipe(L.flatten, takeAll);
 
 const range = (l) => {
   let i = -1;
