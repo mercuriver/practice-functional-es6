@@ -97,24 +97,53 @@
 <script>
   const C = {};
 
-  C.reduce = curry((f, acc, iter) =>
-    iter ? reduce(f, acc, [...iter]) : reduce(f, [...acc])
+  function noop() {}
+
+  const catchNoop = (arr) => (
+    arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
   );
+
+  C.reduce = curry((f, acc, iter) => {
+    const iter2 = catchNoop(iter ? [...iter] : [...acc]);
+    return iter ? reduce(f, acc, iter2) : reduce(f, iter2);
+  });
+
+  C.take = curry((l, iter) => take(l, catchNoop([...iter])));
 
   const delay500 = (a) =>
     new Promise((resolve) => {
-      console.log(`delay - ${a}`);
+      console.log(`delay`);
       setTimeout(() => resolve(a), 500);
     });
 
-  console.time('');
+  // console.time('');
+  // go(
+  //   [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  //   L.map((a) => delay500(a * a)),
+  //   L.filter((a) => a % 2),
+  //   reduce(add),
+  //   log,
+  //   (_) => console.timeEnd('')
+  // );
+  // console.time('C');
+  // go(
+  //   [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  //   L.map((a) => delay500(a * a)),
+  //   L.filter((a) => delay500(a % 2)),
+  //   L.map((a) => delay500(a * a)),
+  //   C.reduce(add),
+  //   log,
+  //   (_) => console.timeEnd('C')
+  // );
+
   go(
     [1, 2, 3, 4, 5, 6, 7, 8, 9],
     L.map((a) => delay500(a * a)),
-    L.filter((a) => a % 2),
-    reduce(add),
-    log,
-    (_) => console.timeEnd('')
+    L.filter((a) => delay500(a % 2)),
+    L.map((a) => delay500(a * a)),
+    C.take(2),
+    C.reduce(add),
+    log
   );
 </script>
 
