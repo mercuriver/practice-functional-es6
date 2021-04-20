@@ -141,7 +141,8 @@
     { age: 37 },
   ];
 
-  const find = curry((f, iter) => go(iter, L.filter(f), take(1), ([a]) => a));
+  // fx.js로 이동
+  // const find = curry((f, iter) => go(iter, L.filter(f), take(1), ([a]) => a));
 
   // log(find((u) => u.age < 30, users));
   // log(find((u) => u.age < 30)(users));

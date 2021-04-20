@@ -1,0 +1,179 @@
+<script src="./fx.js"></script>
+
+<!-- 
+# Promise 
+-->
+
+<!-- 
+## 일급 
+-->
+
+<script>
+  function add10(a, callback) {
+    setTimeout(() => callback(a + 10), 100);
+  }
+
+  // var a = add10(5, (res) => {
+  //   add10(res, (res) => {
+  //     add10(res, (res) => {
+  //       add10(res, (res) => {
+  //         add10(res, (res) => {
+  //           log(res);
+  //         });
+  //       });
+  //     });
+  //   });
+  // });
+  // log(a); // undefined
+
+  // function add20(a) {
+  //   return new Promise((resolve) => setTimeout(() => resolve(a + 20), 100));
+  // }
+
+  // var b = add20(5).then(add20).then(add20).then(add20).then(add20).then(log);
+  // log(b); // Promise {}
+
+  console.clear();
+</script>
+
+<!-- 
+## 일급 활용 
+-->
+
+<script>
+  const delay100 = (a) =>
+    new Promise((resolve) => setTimeout(() => resolve(a), 100));
+
+  // fx.js로 이동
+  // const go1 = (a, f) => (a instanceof Promise ? a.then(f) : f(a));
+  const add5 = (a) => a + 5;
+
+  // var r = go1(10, add5);
+  // log(r);
+  // // log(go1(Promise.resolve(10), add5));
+  // var r2 = go1(delay100(10), add5);
+  // r2.then(log);
+  // =>
+  // var n1 = 10;
+  // var n2 = delay100(10);
+  // go1(go1(n1, add5), log);
+  // go1(go1(n2, add5), log);
+</script>
+
+<!-- 
+## Composition 
+-->
+
+<script type="module">
+  // f . g => f(g(x))
+
+  const g = (a) => a + 1;
+  const f = (a) => a * a;
+
+  // log(f(g(1)));
+  // log(f(g())); // NaN
+
+  // Array.of(1)
+  //   .map(g)
+  //   .map(f)
+  //   .forEach((r) => log(r)); // === log(f(g(1)));
+  // Array.of()
+  //   .map(g)
+  //   .map(f)
+  //   .forEach((r) => log(r)); // !== log(f(g())); NaN이 아닌 실행이 안되기 때문에 안전하게 함수 합성 가능
+
+  // Promise.resolve(1)
+  //   .then(g)
+  //   .then(f)
+  //   .then((r) => log(r));
+
+  // Promise.resolve()
+  //   .then(g)
+  //   .then(f)
+  //   .then((r) => log(r)); // NaN, Promise는 값에 의한 안전한 합성이 아닌, 동기/비동기 상황에서 안전한 합성을 목표로 함
+
+  // new Promise((resolve) => setTimeout(() => resolve(2), 100))
+  //   .then(g)
+  //   .then(f)
+  //   .then((r) => log(r));
+</script>
+
+<!-- 
+## Kleisli Composition 
+-->
+
+<script type="module">
+  // f . g => f(g(x))
+  // f(g(x)) = f(g(x)), 현실에서는 다양한 요인으로 인해 f(g())가 항상 같은 값을 반환하지 못하는 경우가 발생
+  // f(g(x)) = g(x), 외부적 요인으로 인해 g에서 문제가 발생하더라도 f(g())와 같은 함수로 인식될 수 있도록 유도하는 합성법
+
+  var users = [
+    { id: 1, name: 'aa' },
+    { id: 2, name: 'bb' },
+    { id: 3, name: 'cc' },
+  ];
+
+  const getUserById = (id) =>
+    find((u) => u.id == id, users) || Promise.reject('Empty');
+
+  const f = ({ name }) => name;
+  const g = getUserById;
+  // const fg = (id) => f(g(id));
+  // const r = fg(2);
+  // log(r);
+  // users.pop();
+  // users.pop();
+  // const r2 = fg(2); // 에러
+  // log(r);
+
+  // const fg = (id) =>
+  //   Promise.resolve(id)
+  //     .then(g)
+  //     .then(f)
+  //     .catch((a) => a);
+
+  // fg(2).then(log);
+  // users.pop();
+  // users.pop();
+  // fg(2).then(log);
+</script>
+
+<!-- 
+## go, pipe, reduce에서 비동기 제어
+-->
+
+<script>
+  go(
+    1,
+    (a) => a + 10,
+    (a) => Promise.resolve(a + 100),
+    (a) => a + 1000,
+    (a) => a + 10000,
+    log
+  );
+
+  go(
+    1,
+    (a) => a + 10,
+    (a) => Promise.reject('error'),
+    (a) => a + 1000,
+    (a) => a + 10000,
+    log
+  ).catch((a) => console.error(a));
+</script>
+
+<!-- 
+## promise.then의 중요한 규칙
+-->
+
+<script>
+  // then을 통해 받는 값은 Promise로 제한되지 않는다
+  Promise.resolve(Promise.resolve(Promise.resolve(1))).then(function (a) {
+    log(a);
+  });
+  new Promise((resolve) => resolve(new Promise((resolve) => resolve(12)))).then(
+    log
+  );
+
+  // 중첩되어있어도 한번의 then으로 결과에 접근 가능 *중요 포인트
+</script>
