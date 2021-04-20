@@ -95,30 +95,31 @@
 -->
 
 <script>
-  const C = {};
+  // fx.js로 이동
+  // const C = {};
 
-  function noop() {}
+  // function noop() {}
 
-  const catchNoop = ([...arr]) => (
-    arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
-  );
+  // const catchNoop = ([...arr]) => (
+  //   arr.forEach((a) => (a instanceof Promise ? a.catch(noop) : a)), arr
+  // );
 
-  // C.reduce = curry((f, acc, iter) => {
-  //   const iter2 = catchNoop(iter ? [...iter] : [...acc]);
-  //   return iter ? reduce(f, acc, iter2) : reduce(f, iter2);
-  // });
+  // // C.reduce = curry((f, acc, iter) => {
+  // //   const iter2 = catchNoop(iter ? [...iter] : [...acc]);
+  // //   return iter ? reduce(f, acc, iter2) : reduce(f, iter2);
+  // // });
 
-  C.reduce = curry((f, acc, iter) =>
-    iter ? reduce(f, acc, catchNoop(iter)) : reduce(f, catchNoop(acc))
-  );
+  // C.reduce = curry((f, acc, iter) =>
+  //   iter ? reduce(f, acc, catchNoop(iter)) : reduce(f, catchNoop(acc))
+  // );
 
-  C.take = curry((l, iter) => take(l, catchNoop(iter)));
+  // C.take = curry((l, iter) => take(l, catchNoop(iter)));
 
-  C.takeAll = C.take(Infinity);
+  // C.takeAll = C.take(Infinity);
 
-  C.map = curry(pipe(L.map, C.takeAll));
+  // C.map = curry(pipe(L.map, C.takeAll));
 
-  C.filter = curry(pipe(L.filter, C.takeAll));
+  // C.filter = curry(pipe(L.filter, C.takeAll));
 
   const delay500 = (a) =>
     new Promise((resolve) => {
